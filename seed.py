@@ -14,6 +14,8 @@ h_teams = set([t[1] for t in all_games_tuples])
 a_teams = set([t[2] for t in all_games_tuples])
 teams = h_teams.union(a_teams)
 
+team_objects = [Team(country = t) for t in teams]
+
 session.add_all(team_objects)
 session.commit()
 
