@@ -29,8 +29,9 @@ for game in all_games:
     all_game_objects.append(game_object)
 
 
-    h_name = game['home_team_country']
-    a_name = game['away_team_country']
+    
+    h_name = game['home_team']['country']
+    a_name = game['away_team']['country']
     h_goals = game['home_team']['goals']
     h_ball_possession = game['home_team_statistics']['ball_possession']
     a_goals = game['away_team']['goals']
@@ -61,7 +62,3 @@ for game in all_games:
                         on_target = a_on_target)
     all_stats.append(h_stats)
     all_stats.append(a_stats)
-
-session.add_all(all_game_objects)
-session.add_all(all_stats)
-session.commit()
