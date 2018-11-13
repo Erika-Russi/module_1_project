@@ -29,6 +29,8 @@ for game in all_games:
     all_game_objects.append(game_object)
 
 
+    h_name = game['home_team_country']
+    a_name = game['away_team_country']
     h_goals = game['home_team']['goals']
     h_ball_possession = game['home_team_statistics']['ball_possession']
     a_goals = game['away_team']['goals']
@@ -42,6 +44,7 @@ for game in all_games:
 
 
     h_stats = Statistics(game = game_object,
+                         name= h_name,
                          team = h_team,
                         ball_possession =h_ball_possession,
                         goals = h_goals,
@@ -49,6 +52,7 @@ for game in all_games:
                         pass_accuracy = h_pass_accuracy,
                         on_target = h_on_target)
     a_stats = Statistics(game = game_object,
+                         name= a_name,
                         team = a_team,
                         ball_possession =a_ball_possession,
                         goals = a_goals,
