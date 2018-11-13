@@ -62,7 +62,8 @@ for game in all_games:
     h_team = session.query(Team).filter(Team.country == game['home_team_statistics']['country']).one()
     a_team = session.query(Team).filter(Team.country == game['away_team_statistics']['country']).one()
     game_object = Game(venue= game['venue'],
-                       teams = [h_team, a_team])
+                       teams = [h_team, a_team],
+                       winner = game['winner'])
     all_game_objects.append(game_object)
 # session.add_all(all_game_objects)
 # session.commit()
