@@ -31,7 +31,7 @@ def find_home_team_objects():
     return home_team_stats_objects
 
 def find_away_team_objects():
-    away_team_stats_objects=[]
+    aaway_team_stats_objects=[]
     for game in all_games:
         country=game['away_team']['country']
         ball_poss= game["away_team_statistics"]["ball_possession"]
