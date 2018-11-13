@@ -7,22 +7,6 @@ engine = create_engine('sqlite:///games.db')
 Session = sessionmaker(bind=engine)
 session = Session()
 
-def team_with_highest_ball_poss():
-    max_bp= session.query(Statistics,func.max(Statistics.ball_possession)).join(Team).first()
-    return max_bp.Statistics.name
-
-def team_with_longest_dist_covered():
-    max_dc= session.query(Statistics,func.max(Statistics.distance_covered)).join(Team).first()
-    return max_dc.Statistics.name
-
-def team_with_shortest_dist_covered():
-    min_dc= session.query(Statistics,func.min(Statistics.distance_covered)).join(Team).first()
-    return min_dc.Statistics.name
-
-def team_with_lowest_ball_poss():
-    min_bp= session.query(Statistics,func.min(Statistics.ball_possession)).join(Team).first()
-    return min_bp.Statistics.name
-
 def return_country_and_its_total_goals():
     return session.query(Team.country, func.sum(Statistics.goals)).join(Statistics).group_by(Team.country).all()
 
@@ -37,3 +21,14 @@ def return_average_pa_per_game():
 
 def return_average_dc_per_game_desc():
     return session.query(Team.country, func.avg(Statistics.distance_covered)).join(Statistics).group_by(Team.country).order_by(Statistics.distance_covered.desc()).all()
+
+def return_dc_per_team_desc():
+    return session.query(Team.country, func.sum(Statistics.distance_covered)).group_by(Statistics.name).order_by(func.sum(Statistics.distance_covered).desc()).join(Statistics).all()
+
+def return_venue_by_goals_desc():
+    return session.query(Game.venue, func.sum(Statistics.goals)).join(Statistics).group_by(Game.venue).order_by(func.sum(Statistics.goals).desc()).all()
+
+def return_goals_per_team_desc():
+    return session.query(Team.country, func.sum(Statistics.goals)).group_by(Statistics.name).order_by(func.sum(Statistics.goals).desc()).join(Statistics).all()
+
+
