@@ -1,0 +1,18 @@
+ETL - either scraping or api
+for now:
+get data, inspect it, can you meet expectations?, clean it and put it into models (a class)
+by monday, you will have already seeded your database with database
+at minimum, your data should be ready togo and models set up byt monday AM
+
+
+1. git clone
+2. add new file: 'git add new_file.py'
+3. 'git commit -m "initial commit" '
+4. git pull
+5. git branch
+6. git checkout - b wip-forest
+7. create a new file: 'touch blah.txt'
+
+
+
+gather interesting data that you will allow the user to explore
