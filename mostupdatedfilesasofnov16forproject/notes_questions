@@ -1,0 +1,249 @@
+# notes and questions
+# AFTER FLASK LOADED NOTES
+PANDAS
+#Extracting Data with Pandas
+    Our next task is to read our excel file with pandas and get our data.
+    To do this, we will create a new file called real_estate_db.py. In this file
+    we will import both pandas and os so that we can get our current working directory,
+     which we will need in order to read our excel file with pandas.
+Next, read the excel file with pandas and pass in a second argument, names, to be sure that our data receives the correct file names. Below is the list of names already provided:
+
+names = ["UID", "BLOCKID", "SUMLEVEL", "COU
+
+# readme from other lab below
+## Extracting Data with Pandas
+
+Our next task is to read our excel file with pandas and get our data. To do this, we will create a new file called `real_estate_db.py`. In this file we will import both `pandas` and `os` so that we can get our current working directory, which we will need in order to read our excel file with `pandas`.
+
+Next, read the excel file with pandas and pass in a second argument, `names`, to be sure that our data receives the correct file names. Below is the list of names already provided:
+
+```python
+names = ["UID", "BLOCKID", "SUMLEVEL", "COUNTYID", "STATEID", "state", "state_ab", "city", "place", "type", "primary", "zip_code", "area_code", "lat", "lng", "ALand", "AWater", "pop", "male_pop", "female_pop", "rent_mean", "rent_median", "rent_stdev", "rent_sample_weight", "rent_samples", "rent_gt_10", "rent_gt_15", "rent_gt_20", "rent_gt_25", "rent_gt_30", "rent_gt_35", "rent_gt_40", "rent_gt_50", "universe_samples", "used_samples", "hi_mean", "hi_median", "hi_stdev", "hi_sample_weight", "hi_samples", "family_mean", "family_median", "family_stdev", "family_sample_weight", "family_samples", "hc_mortgage_mean", "hc_mortgage_median", "hc_mortgage_stdev", "hc_mortgage_sample_weight", "hc_mortgage_samples", "hc_mean", "hc_median", "hc_stdev", "hc_samples", "hc_sample_weight", "home_equity_second_mortgage", "second_mortgage", "home_equity", "debt", "second_mortgage_cdf", "home_equity_cdf", "debt_cdf", "hs_degree", "hs_degree_male", "hs_degree_female", "male_age_mean", "male_age_median", "male_age_stdev", "male_age_sample_weight", "male_age_samples", "female_age_mean", "female_age_median", "female_age_stdev", "female_age_sample_weight", "female_age_samples", "pct_own", "married", "married_snp", "separated", "divorced"]
+```
+
+Assign the return value of the read_excel function, which is a dataframe, to a variable such as `excel_data`. Once the dataframe object comes back we will want to call the `dropna` function on it to remove any rows whose cells in the 'pop', 'rent_mean', 'male_pop', 'female_pop', 'pct_own', and 'married' columns have the datatype `NaN`.
+
+```python
+clean_data=excel_data.dropna(axis=0, subset=['pop', 'rent_mean', 'male_pop', 'female_pop', 'pct_own', 'married'])
+```
+
+If a cell doesn't contain a string of text, that will usually be okay and not cause our program to break. However, if we have cells that are missing number values, these can cause our functions to error out due to breaking operations such as trying to sum an integer and `NaN`.
+
+Finally, we will want to convert our `clean_data` using the pandas dataframe `.to_dict()` function.  Pass in the argument `'records'` so that our [return value is a list of dictionaries](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.to_dict.html).  All of this should be assigned to a variable, `data`, which we will be able import to our other files to use and populate our database.
+
+## Using the ETL Pattern
+
+So far, we have successfully extracted our data. Now we are going to complete the ETL process by formatting (or transforming) our data from the format it came in from the excel file, and then using the formatted data to create objects in our database.
+
+First, we will need to import our data object we just finished creating in our `real_estate_db.py` file and then import our models and db object.
+
+Looking at the format of the data will help to contextualize how we might begin to format our data and load it into the database. Since we have nearly 40,000 rows in our excel file, we can think about starting to aggregate some of this information. Since cities are broken up into boroughs or neighborhoods, we need to figure out how to iterate through our data to only create one city and the demographics for that city will be an aggregate or average of the information for each part of a given city. For example, in lieu of creating demographics for New York's 5 Boroughs, Staten Island, Queens, The Bronx, Brooklyn, and Manhattan, we will aggregate or average the demographic individual statistics into one and then use the calculated totals and averages to create one demographic object for New York.
+
+Properties such as mean rent (mean_rent), percent own (pct_own), and percent married(pct_married) will need to be averages from each part of the city whereas properties such as population, male population (male_pop), and female population (female_pop) will be the sum total for each part of the city.
+
+Start by writing a function that returns a list of objects for each city from the data object. From there find or create the State object in the database. Next, use the data and the state's id in the database to find or create a new city object, and lastly, use the the city object's id to find or create a new demographic object in the database. Make sure to relate each instance appropriately and then add and commit all new instances to the database.
+
+**To use our new ETL functions, open a new python shell and import all the functions from the etl file. Run the necessary function(s) to load our data into the data base.**
+
+> **Note:** It should take some time to seed the database since we are working with so much data!
+
+Now our file tree should now looks like the following:
+```python
+├── CONTRIBUTING.md
+├── LICENSE.md
+├── README.md
+├── dashaltogethernow
+│   ├── __init__.py
+│   ├── app.db
+│   ├── etl.py
+│   ├── models.py
+│   ├── real_estate_db.py
+│   └── real_estate_db.xlsx
+├── index.ipynb
+├── requirements.txt
+└── run.py
+```
+
+## Creating a Dash Layout
+
+Now that our data has been sent through our ETL, we want to display it. Start by creating a new dashboard layout file, `dash_layout.py`.
+
+We will need to import our Dash core components, html components, and dependencies as well as our app, models, and database.
+
+Our end goal is to have graphs that look something like this:
+![dashaltogether preview](./dashaltogether_preview.png)
+
+Start by creating a layout that generates a graph that shows the total population for each city in "New Jersey".
+
+Then create a function that creates and returns this graph for you. Next, add an html component that acts as a container for the population bar graph. Additionally, we will want to add a dropdown menu with each states' name as an option. This is also a good opportunity to create a function that creates the dropdown for us.
+
+Once we have our container and our dropdown, we can remove our graph from the layout directly and create a callback function that changes the children of the population bar graph container we just added based on which state is selected in the dropdown. Use the function we created to generate the graph and use the input value from the dropdown to filter which state's populations by city are showed.
+
+Finally, add a line graph that shows the mean rent for each city in the selected state below the graph for the populations. Once that is complete, your application should look like the above!
+
+## Summary
+
+Great work! In this lab, we practiced creating a new Dash app, SQLAlchemy to create and query our database, and pandas to extract information from our excel. We used the ETL pattern to transform this data and load it into our database. We then used Dash to create a new layout for our application and create graphs that display our data.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# engine = create_engine('sqlite:///games.db')
+# Session = sessionmaker(bind=engine)  #DONT NEET BECAUSE flask_sqlalchemy contains the session object for our application,
+# session = Session()  #DONT NEET BECAUSE flask_sqlalchemy contains the session object for our application,
+
+#done actions
+# classes more updated in flaskrun file
+#kyle - 1) changed columns to db.column
+#kyle - 2)  import flask_sqlalchemy, added db.create_all,got rid of engine and session and base
+
+# ### Classes have to add to dictionary function***
+#Questions def to_dict for
+    # 1) relationships
+    # 2)multiple elments i.e. statistics
+
+
+
+# @app.route('/goals/')
+# def return_country_and_its_total_goals():
+#     session= session.db.query(Team.country, func.sum(Statistics.goals)).join(Statistics).group_by(Team.country).all()
+#     return session
+
+# created JSON routes for our API
+# @app.server.route('/api/users')
+# def user_index():
+#     all_users = db.session.query(User).all()
+#     all_users_dicts = [user.to_dict() for user in all_users]
+#     return jsonify(all_users_dicts)
+#
+# @app.server.route('/api/users/<int:id>')
+# def find_user(id):
+#     user = User.query.filter(User.id == id).first()
+#     return jsonify(user.to_dict())
+#
+#
+#
+#
+# # created routes for the appropriate HTML Templates
+# @app.server.route('/users')
+# def users_index():
+#     all_users = db.session.query(User).all()
+#     all_users_dicts = [user.to_dict() for user in all_users]
+#     return render_template('users.html', users=all_users_dicts)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#
+# #old Lab below
+#
+# @app.server.route('/api/users/<name>')
+# def find_user_by_name(name):
+#     user = User.query.filter(User.username.like(name)).first()
+#     return jsonify(user.to_dict())
+#
+# @app.server.route('/api/tweets')
+# def tweet_index():
+#     all_tweets = Tweet.query.all()
+#     all_tweets_dicts = [tweet.to_dict() for tweet in all_tweets]
+#     return jsonify(all_tweets_dicts)
+#
+# @app.server.route('/api/tweets/<int:id>')
+# def find_tweet(id):
+#     return jsonify(Tweet.query.filter(Tweet.id == id).first().to_dict())
+#
+# @app.server.route('/api/users/<int:user_id>/tweets')
+# def find_users_tweets(user_id):
+#     return jsonify(User.query.filter(User.id == user_id).first().to_dict())
+#
+# @app.server.route('/api/users/<user_name>/tweets')
+# def find_users_tweets_by_user_name(user_name):
+#     return jsonify(User.query.filter(User.name == user_name.lower().title()).first().tweets())
+#
+# @app.server.route('/api/tweets/<int:tweet_id>/user')
+# def find_tweets_user(tweet_id):
+#     return jsonify(Tweet.query.filter(Tweet.id == tweet_id).first().user.to_dict())
+# @app.server.route('/users/<int:id>')
+# def user_show_by_id(id):
+#     user = User.query.filter(User.id == id).first().to_dict()
+#     return render_template('user_show.html', user=user)
+#
+# @app.server.route('/users/<name>')
+# def user_show_by_name(name):
+#     user = User.query.filter(User.username.like(name)).first().to_dict()
+#     return render_template('user_show.html', user=user)
+#
+# @app.server.route('/tweets')
+# def tweets_index():
+#     all_tweets = Tweet.query.all()
+#     all_tweets_dicts = [tweet.to_dict() for tweet in all_tweets]
+#     return render_template('tweets.html', tweets=all_tweets_dicts)
+#
+# @app.server.route('/tweets/<int:id>')
+# def tweet_show_by_id(id):
+#     tweet = Tweet.query.filter(Tweet.id == id).first().to_dict()
+#     return render_template('tweet_show.html', tweet=tweet)
+#
+# @app.server.route('/users/<int:user_id>/tweets')
+# def find_tweets_by_user_id(user_id):
+#     user_tweets = User.query.filter(User.id == user_id).first().to_dict()
+#     return render_template('tweets.html', tweets=user_tweets['tweets'])
+#
+# @app.server.route('/users/<user_name>/tweets')
+# def find_tweets_by_username(user_name):
+#     user_tweets = User.query.filter(User.username == user_name.lower().title()).first().to_dict()
+#     return render_template('tweets.html', tweets=user_tweets['tweets'])
+#
+# @app.server.route('/tweets/<int:tweet_id>/user')
+# def find_user_by_tweet(tweet_id):
+#     tweet = Tweet.query.filter(Tweet.id == tweet_id).first().to_dict()
+#     user = User.query.filter(User.id == tweet['user_id']).first().to_dict()
+#     return render_template('user_show.html', user=user)
+
+
+
+#
+# INIT
+
+# from flask import Flask, jsonify
+# # import SQLAlchemy from flask_sqlalchemy
+# from flask_sqlalchemy import SQLAlchemy
+#
+# # initialize new flask app
+# app = Flask(__name__)
+# # add configurations and database URI
+# app.config['DEBUG'] = True
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+#
+# # connect SQLAlchemy to the configured flask app
+# db = SQLAlchemy(app)
+
+# #import our routes after our database has been configured
+# from ourpackage import routes
